@@ -36,20 +36,20 @@ class TradeService {
 
         offer.send((err, status) => {
           if (err) {
-            console.error(`✗ [${username}] Trade failed:`, err.message);
+            Logger.error(`✗ [${username}] Trade failed:`, err.message);
             return reject(err);
           }
 
-          console.log(`✓ [${username}] Trade offer sent. Status: ${status}`);
+          Logger.success(`[${username}] Trade offer sent. Status: ${status}`);
 
           if (status === 'pending') {
             const account = accounts.find(a => a.id === botId);
             if (account && account.identity_secret) {
               community.acceptConfirmationForObject(account.identity_secret, offer.id, (err) => {
                 if (err) {
-                  console.error(`✗ [${username}] Failed to confirm trade:`, err.message);
+                  Logger.error(`[${username}] Failed to confirm trade:`, err.message);
                 } else {
-                  console.log(`✓ [${username}] Trade confirmed`);
+                  Logger.success(`[${username}] Trade confirmed`);
                 }
               });
             }
