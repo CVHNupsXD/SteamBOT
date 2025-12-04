@@ -15,7 +15,6 @@ A web-based Steam bot manager for CS2 inventory management, automated trading, a
 
 - Node.js 20+ or Docker
 - Steam accounts with 2FA enabled
-- Steam API access
 
 ### Local Installation
 
@@ -49,6 +48,9 @@ module.exports = {
   TRADE_POLL_INTERVAL: 30000
 };
 ```
+
+### TODO:
+- Confirm trade with identity_secret
 
 ## Disclaimer
 
