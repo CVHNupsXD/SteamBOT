@@ -54,7 +54,9 @@ module.exports = {
 
 ## Disclaimer
 
-This tool is for educational purposes. Use at your own risk. The authors are not responsible for any consequences of using this software, including but not limited to Steam account bans or restrictions. Always comply with Steam's Terms of Service and Subscriber Agreement.
+- This project is not designed for public use, and using it in a public environment may introduce security risks.
+
+- This tool is for educational purposes. Use at your own risk. The authors are not responsible for any consequences of using this software, including but not limited to Steam account bans or restrictions. Always comply with Steam's Terms of Service and Subscriber Agreement.
 
 ## Acknowledgments
 
