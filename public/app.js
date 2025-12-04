@@ -188,9 +188,11 @@ const App = {
     }
 
     let sharedSecret = '';
+    let identitySecret = '';
 
     if (secretSource === 'manual') {
       sharedSecret = document.getElementById('newSharedSecret').value.trim();
+      identitySecret = document.getElementById('newIdentitySecret').value.trim();
     } else if (secretSource === 'upload') {
       const fileInput = document.getElementById('maFileUpload');
       if (fileInput.files.length > 0) {
@@ -205,6 +207,7 @@ const App = {
           }
 
           sharedSecret = maData.shared_secret;
+          identitySecret = maData.identity_secret;
           this.addNotification('.maFile parsed successfully', 'success');
         } catch (error) {
           this.addNotification('Failed to parse .maFile: ' + error.message, 'error');
@@ -217,7 +220,7 @@ const App = {
       const res = await fetch('/api/accounts/add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password, email, sharedSecret })
+        body: JSON.stringify({ username, password, email, sharedSecret, identitySecret })
       });
 
       if (res.ok) {
@@ -412,11 +415,11 @@ const App = {
       (itemCount === 0 ? '<div class="text-center py-8 text-gray-400"><i class="fas fa-inbox text-4xl mb-2"></i><p>No items</p></div>' :
         inventory.slice(0, displayLimit).map(item => this.renderItem(item)).join('')) +
       '</div>' +
-      (hasMore && !isExpanded ? 
+      (hasMore && !isExpanded ?
         '<button onclick="App.toggleExpandInventory(\'' + account.id + '\')" class="w-full glass hover:bg-white/10 text-white py-2 rounded-lg mt-2 text-sm transition-all">' +
         '<i class="fas fa-chevron-down mr-2"></i>Show All (' + (inventory.length - 20) + ' more)' +
         '</button>' : '') +
-      (isExpanded ? 
+      (isExpanded ?
         '<button onclick="App.toggleExpandInventory(\'' + account.id + '\')" class="w-full glass hover:bg-white/10 text-white py-2 rounded-lg mt-2 text-sm transition-all">' +
         '<i class="fas fa-chevron-up mr-2"></i>Show Less' +
         '</button>' : '') +

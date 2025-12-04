@@ -80,12 +80,15 @@
         </div>
         <div id="manualSecretDiv">
           <label class="text-gray-300 text-sm">Shared Secret</label>
-          <input type="text" id="newSharedSecret" class="w-full glass text-white px-4 py-2 rounded-lg border border-white/20 focus:border-blue-500 focus:outline-none" placeholder="ABCDEFGHIJ1234567890">
+          <input type="text" id="newSharedSecret" class="w-full glass text-white px-4 py-2 rounded-lg border border-white/20 focus:border-blue-500 focus:outline-none mb-3" placeholder="ABCDEFGHIJ1234567890">
+  
+          <label class="text-gray-300 text-sm">Identity Secret</label>
+          <input type="text" id="newIdentitySecret" class="w-full glass text-white px-4 py-2 rounded-lg border border-white/20 focus:border-blue-500 focus:outline-none" placeholder="KLMNOPQRST0987654321">
         </div>
         <div id="uploadSecretDiv" style="display:none;">
           <label class="text-gray-300 text-sm">Upload .maFile</label>
           <input type="file" id="maFileUpload" accept=".maFile" class="w-full glass text-white px-4 py-2 rounded-lg border border-white/20">
-          <p class="text-xs text-gray-400 mt-1">File will be parsed in browser - only shared_secret is extracted</p>
+          <p class="text-xs text-gray-400 mt-1">File will be parsed in browser</p>
         </div>
         <div class="flex gap-3 mt-6">
           <button onclick="App.saveNewAccount()" class="flex-1 glass-strong hover:bg-blue-600/30 text-white py-2 rounded-lg font-semibold transition-all">

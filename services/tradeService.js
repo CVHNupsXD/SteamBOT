@@ -25,7 +25,7 @@ class TradeService {
         }
 
         const offer = manager.createOffer(tradeUrl.trim());
-        
+
         tradableItems.forEach(item => {
           offer.addMyItem({
             appid: appId,
@@ -36,20 +36,20 @@ class TradeService {
 
         offer.send((err, status) => {
           if (err) {
-            Logger.error(username, `Trade failed: ${err.message}`);
+            console.error(`✗ [${username}] Trade failed:`, err.message);
             return reject(err);
           }
 
-          Logger.success(username, `Trade offer sent. Status: ${status}`);
-          
+          console.log(`✓ [${username}] Trade offer sent. Status: ${status}`);
+
           if (status === 'pending') {
             const account = accounts.find(a => a.id === botId);
-            if (account && account.sharedSecret) {
-              community.acceptConfirmationForObject(account.sharedSecret, offer.id, (err) => {
+            if (account && account.identity_secret) {
+              community.acceptConfirmationForObject(account.identity_secret, offer.id, (err) => {
                 if (err) {
-                  Logger.error(username, `Failed to confirm trade: ${err.message}`);
+                  console.error(`✗ [${username}] Failed to confirm trade:`, err.message);
                 } else {
-                  Logger.success(username, 'Trade confirmed');
+                  console.log(`✓ [${username}] Trade confirmed`);
                 }
               });
             }

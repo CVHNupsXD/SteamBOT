@@ -9,11 +9,11 @@ module.exports = (botManager, database, config) => {
   // Get all accounts
   router.get('/', (req, res) => {
     const accounts = database.getAllAccounts();
-    
+
     const sanitizedAccounts = accounts.map(acc => {
       const bot = botManager.getBot(`bot_${acc.id}`);
       const session = database.getSession(acc.username);
-      
+
       return {
         id: `bot_${acc.id}`,
         username: acc.username,
@@ -23,18 +23,18 @@ module.exports = (botManager, database, config) => {
         inventory: []
       };
     });
-    
+
     res.json({ accounts: sanitizedAccounts });
   });
-
+  
   // Add new account
   router.post('/add', async (req, res) => {
-    const { username, password, email, sharedSecret } = req.body;
+    const { username, password, email, sharedSecret, identitySecret } = req.body;
 
     if (!username || !password) {
       return res.status(400).json({ error: 'Username and password are required' });
     }
-    
+
     const existing = database.getAccount(username);
     if (existing) {
       return res.status(400).json({ error: 'Account already exists' });
@@ -46,11 +46,11 @@ module.exports = (botManager, database, config) => {
       email: email || null,
       recoveryCode: null,
       sharedSecret: sharedSecret || null,
-      identitySecret: null
+      identitySecret: identitySecret || null
     });
-    
+
     if (accountId) {
-      res.json({ 
+      res.json({
         message: 'Account added successfully',
         accountId: accountId
       });
@@ -62,14 +62,14 @@ module.exports = (botManager, database, config) => {
   // Delete account
   router.delete('/:username', (req, res) => {
     const { username } = req.params;
-    
+
     const account = database.getAccount(username);
     if (account) {
       botManager.stopBot(`bot_${account.id}`);
     }
-    
+
     database.deleteAccount(username);
-    
+
     res.json({ message: 'Account deleted successfully' });
   });
 
