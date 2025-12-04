@@ -54,7 +54,7 @@ const App = {
         const message = JSON.parse(event.data);
         this.handleWebSocketMessage(message);
       } catch (error) {
-        Logger.error('Failed to parse WebSocket message:', error);
+        this.addNotification('Failed to parse WebSocket message:', error);
       }
     };
 
