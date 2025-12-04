@@ -184,8 +184,6 @@ class InventoryService {
 
         const items = inventory.map(item => {
           const isTradable = item.tradable === true || item.tradable === 1;
-
-          const isTradeProtectedContext = ctx === protectedContextId;
           
           const descriptions = item.descriptions || [];
           let hasTradeHold = false;
@@ -207,8 +205,8 @@ class InventoryService {
             }
           }
           
-          const tradeLocked = (isTradable && hasTradeHold) || isTradeProtectedContext;
-          const tradable = isTradable && !hasTradeHold && !isTradeProtectedContext;
+          const tradeLocked = (isTradable && hasTradeHold) || protectedContextId;
+          const tradable = isTradable && !hasTradeHold && !protectedContextId;
           const nonTradable = !isTradable;
 
           return {
@@ -223,7 +221,7 @@ class InventoryService {
             tradable,
             tradeLocked,
             nonTradable,
-            tradeProtected: isTradeProtectedContext,
+            tradeProtected: protectedContextId,
 
             marketable: item.marketable === 1 || item.marketable === true,
 
