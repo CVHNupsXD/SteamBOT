@@ -3,6 +3,7 @@
 // ========================================
 const Database = require('better-sqlite3');
 const Logger = require('../utils/logger');
+const JwtUtils = require('../utils/jwtUtils');
 
 class DatabaseService {
   constructor(dbPath) {
@@ -65,6 +66,7 @@ class DatabaseService {
     this.setSettingDefault('trade_link', '');
     this.setSettingDefault('login_delay', '5000');
     this.setSettingDefault('login_mode', 'queue');
+    this.setSettingDefault('hide_identity', 'false');
   }
 
   addAccount(accountData) {
@@ -122,9 +124,20 @@ class DatabaseService {
     const account = this.getAccount(username);
     if (!account) return null;
 
+    let expiresAt = null;
+    if (sessionData.refreshToken) {
+      const payload = JwtUtils.decodeJWT(sessionData.refreshToken);
+      if (payload && typeof payload.exp === 'number') {
+        const date = new Date(payload.exp * 1000);
+        expiresAt = date.toISOString()
+          .replace('T', ' ')
+          .replace(/\.\d+Z?$/, '');
+      }
+    }
+
     const stmt = this.db.prepare(`
       INSERT OR REPLACE INTO sessions (account_id, refresh_token, session_id, steam_id, expires_at, updated_at)
-      VALUES (?, ?, ?, ?, datetime('now', '+30 days'), CURRENT_TIMESTAMP)
+      VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
     `);
 
     try {
@@ -132,7 +145,8 @@ class DatabaseService {
         account.id,
         sessionData.refreshToken || null,
         sessionData.sessionId || null,
-        sessionData.steamId || null
+        sessionData.steamId || null,
+        expiresAt || null
       );
     } catch (error) {
       Logger.error('Database', `Failed to save session: ${error.message}`);

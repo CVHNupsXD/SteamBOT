@@ -9,6 +9,8 @@
 </head>
 <body class="min-h-screen">
 
+  <div id="bg-orbs"></div>
+
   <!-- Loading Screen -->
   <div id="loadingScreen" class="loading-screen flex items-center justify-center">
     <div class="text-center">
@@ -19,31 +21,34 @@
   </div>
 
   <div id="app" style="display:none;">
-    <!-- Navigation -->
-    <nav class="glass-strong border-b border-white/10">
-      <div class="max-w-7xl mx-auto px-6 py-4">
-        <div class="flex items-center justify-between">
-          <h1 class="text-2xl font-bold text-white flex items-center gap-3">
-            <i class="fas fa-robot text-blue-400"></i>
-            Steam Bot Manager
-          </h1>
-          <div class="flex gap-2">
-            <button onclick="App.switchTab('dashboard')" class="tab-button px-4 py-2 text-gray-300 hover:text-white border-b-2 border-transparent transition-colors">
-              <i class="fas fa-th-large mr-2"></i>Dashboard
-            </button>
-            <button onclick="App.switchTab('settings')" class="tab-button px-4 py-2 text-gray-300 hover:text-white border-b-2 border-transparent transition-colors">
-              <i class="fas fa-cog mr-2"></i>Settings
-            </button>
+    <nav id="mainNav" class="sticky top-4 left-0 right-0 z-[70]">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="glass-strong glass-tilt border-b border-white/10 rounded-xl">
+          <div class="px-4 py-4">
+            <div class="flex items-center justify-between">
+              <h1 class="text-2xl font-bold text-white flex items-center gap-3">
+                <i class="fas fa-robot text-blue-400"></i>
+                Steam Bot Manager
+              </h1>
+              <div class="flex gap-2">
+                <button onclick="App.switchTab('dashboard')" data-tab="dashboard" class="tab-button px-4 py-2 text-gray-300 hover:text-white border-b-2 border-transparent transition-colors glass-cta rounded-lg">
+                  <i class="fas fa-th-large mr-2"></i>Dashboard
+                </button>
+                <button onclick="App.switchTab('settings')" data-tab="settings" class="tab-button px-4 py-2 text-gray-300 hover:text-white border-b-2 border-transparent transition-colors glass-cta rounded-lg">
+                  <i class="fas fa-cog mr-2"></i>Settings
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </nav>
 
     <!-- Dashboard Tab -->
-    <div id="dashboardTab" class="max-w-7xl mx-auto p-6" style="display:block;"></div>
+    <div id="dashboardTab" class="max-w-7xl mx-auto px-6 pt-12 pb-6" style="display:block;"></div>
 
     <!-- Settings Tab -->
-    <div id="settingsTab" class="max-w-7xl mx-auto p-6" style="display:none;"></div>
+    <div id="settingsTab" class="max-w-7xl mx-auto px-6 pt-12 pb-6" style="display:none;"></div>
   </div>
 
   <!-- Add Account Modal -->
@@ -102,6 +107,7 @@
     </div>
   </div>
   <link rel="stylesheet" href="styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

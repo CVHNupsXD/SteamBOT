@@ -7,6 +7,7 @@ module.exports = {
 
   CS2_APP_ID: 730,
   CONTEXT_ID: 2,
+  TRADE_PROTECTED_CONTEXT_ID: 16,
   
   LOGIN_DELAY: 5000,        // Delay between account logins (ms)
   INVENTORY_DELAY: 3000,    // Delay before loading inventory (ms)
@@ -14,9 +15,6 @@ module.exports = {
   MAX_LOGIN_RETRIES: 3,     // Maximum login retry attempts
   LOGIN_TIMEOUT: 30000,     // Login timeout (ms)
   RATE_LIMIT_WAIT: 60000,   // Wait time after rate limit (ms)
-  
-  SAVE_SESSIONS: true,      // Enable session saving
-  SESSION_LIFETIME: 30 * 24 * 60 * 60 * 1000, // 30 days in ms
   
   TRADE_POLL_INTERVAL: 30000,     // Trade offer poll interval (ms)
   TRADE_CANCEL_TIME: 7 * 60 * 1000 // Cancel trade after (ms)

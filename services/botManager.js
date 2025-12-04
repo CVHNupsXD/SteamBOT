@@ -3,10 +3,12 @@
 // ========================================
 const SteamUser = require('steam-user');
 const SteamTotp = require('steam-totp');
+const SteamSession = require('steam-session');
 const TradeOfferManager = require('steam-tradeoffer-manager');
 const SteamCommunity = require('steamcommunity');
 const path = require('path');
 const Logger = require('../utils/logger');
+const JwtUtils = require('../utils/jwtUtils');
 
 class BotManager {
   constructor(config, websocketService, inventoryService, database) {
@@ -30,6 +32,7 @@ class BotManager {
     const client = new SteamUser({
       promptSteamGuardCode: false,
       autoRelogin: true,
+      renewRefreshTokens: true,
       dataDirectory: path.join(this.config.POLL_DATA_DIR, account.username)
     });
 
@@ -46,11 +49,48 @@ class BotManager {
     let logOnOptions = {};
 
     if (savedSession && savedSession.refresh_token) {
-      Logger.info(account.username, 'Attempting login with saved refresh token');
-      logOnOptions = {
-        refreshToken: savedSession.refresh_token
-      };
-    } else {
+      const jwtObj = JwtUtils.decodeJWT(savedSession.refresh_token);
+
+      if (jwtObj && typeof jwtObj.exp === 'number') {
+        const validUntilMs = jwtObj.exp * 1000;
+
+        if (validUntilMs > Date.now()) {
+          const validUntilStr = new Date(validUntilMs)
+            .toISOString()
+            .replace(/T/, ' ')
+            .replace(/\..+/, '');
+
+          Logger.info(
+            account.username,
+            `Found valid refresh token in database, valid until '${validUntilStr}' (GMT). Logging in with it to reuse session...`
+          );
+
+          logOnOptions = {
+            refreshToken: savedSession.refresh_token
+          };
+        } else {
+          const expiredAtStr = new Date(validUntilMs)
+            .toISOString()
+            .replace(/T/, ' ')
+            .replace(/\..+/, '');
+
+          Logger.info(
+            account.username,
+            `Stored refresh token is expired (was valid until '${expiredAtStr}'). Logging in with credentials to get a new session...`
+          );
+
+          // Treat as no valid token
+          this.database.deleteSession(account.username);
+        }
+      } else {
+        Logger.warning(
+          account.username,
+          'Failed to decode stored refresh token payload or missing exp. Logging in with credentials to get a new session...'
+        );
+        this.database.deleteSession(account.username);
+      }
+    }
+    if (!logOnOptions.refreshToken) {
       logOnOptions = {
         accountName: account.username,
         password: account.password
@@ -145,9 +185,7 @@ class BotManager {
             account.id,
             account.username,
             client,
-            community,
-            this.config.CS2_APP_ID,
-            this.config.CONTEXT_ID
+            community
           );
         }, this.config.INVENTORY_DELAY);
       } catch (error) {
@@ -229,8 +267,6 @@ class BotManager {
           account.username,
           client,
           community,
-          this.config.CS2_APP_ID,
-          this.config.CONTEXT_ID,
           true
         );
       }, 3000);

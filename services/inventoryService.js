@@ -26,7 +26,7 @@ class InventoryService {
     return 'common';
   }
 
-  loadInventory(botId, username, client, community, appId, contextId, forceRefresh = false, manager = null) {
+  loadInventory(botId, username, client, community, forceRefresh = false, manager = null) {
     if (!client || !client.steamID) {
       Logger.warning(username, 'Cannot load inventory - not logged in');
       return;
@@ -36,6 +36,11 @@ class InventoryService {
       Logger.warning(username, 'Community not initialized');
       return;
     }
+
+    const appId = this.config.CS2_APP_ID;
+    const contextId = this.config.CONTEXT_ID;
+    const protectedContextId = this.config.TRADE_PROTECTED_CONTEXT_ID;
+    const contextsToCheck = [contextId, protectedContextId];
 
     if (!forceRefresh) {
       const cached = this.database.getInventoryCache(username, appId, contextId);
@@ -54,7 +59,6 @@ class InventoryService {
 
     Logger.inventory(username, 'Loading inventory...');
 
-    // Prefer TradeOfferManager if available
     if (manager && typeof manager.getInventoryContents === 'function') {
       
       manager.getInventoryContents(appId, contextId, false, (err, inventory) => {
@@ -66,19 +70,24 @@ class InventoryService {
         const items = inventory.map(item => {
           const isTradable = item.tradable === true || item.tradable === 1;
           
-          // Check descriptions for actual trade hold
           const descriptions = item.descriptions || [];
           let hasTradeHold = false;
           let actualTradeHoldDays = 0;
+          let extraDescription = '';
           
           for (const desc of descriptions) {
-            const text = (desc.value || '').toLowerCase();
+            const rawText = desc.value || '';
+            const text = rawText.toLowerCase();
             if (text.includes('tradable after') || text.includes('cannot be traded until')) {
               hasTradeHold = true;
               const daysMatch = text.match(/(\d+)\s*day/i);
               if (daysMatch) {
                 actualTradeHoldDays = parseInt(daysMatch[1], 10);
               }
+            }
+
+            if (!extraDescription && rawText && !text.includes('tradable after') && !text.includes('cannot be traded until')) {
+              extraDescription = rawText.replace(/<br\s*\/?>/gi, ' ').trim();
             }
           }
           
@@ -94,6 +103,7 @@ class InventoryService {
             name: item.market_hash_name || item.name || 'Unknown Item',
             type: item.type || 'Unknown',
             rarity: this.getRarityFromTags(item.tags),
+            description: extraDescription,
 
             tradable,
             tradeLocked,
@@ -126,11 +136,8 @@ class InventoryService {
       return;
     }
 
-    // Fallback: Use community.getUserInventory
     const steamId = client.steamID.getSteamID64();
-    
-    // Load from multiple contexts to get all items
-    const contextsToCheck = [contextId, '16']; // Check main context + context 16 (trade-protected)
+
     let allItems = [];
     let contextsLoaded = 0;
     
@@ -177,8 +184,8 @@ class InventoryService {
 
         const items = inventory.map(item => {
           const isTradable = item.tradable === true || item.tradable === 1;
-          
-          const isTradeProtectedContext = ctx === '16';
+
+          const isTradeProtectedContext = ctx === protectedContextId;
           
           const descriptions = item.descriptions || [];
           let hasTradeHold = false;

@@ -31,12 +31,10 @@ module.exports = (botManager, inventoryService, config, database) => {
     
     if (client && community) {
       inventoryService.loadInventory(
-        accountId, 
-        username, 
-        client, 
-        community, 
-        config.CS2_APP_ID, 
-        config.CONTEXT_ID,
+        accountId,
+        username,
+        client,
+        community,
         true // Force refresh
       );
       res.json({ message: 'Inventory refresh started' });
