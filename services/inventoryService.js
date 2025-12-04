@@ -39,8 +39,6 @@ class InventoryService {
 
     const appId = this.config.CS2_APP_ID;
     const contextId = this.config.CONTEXT_ID;
-    const protectedContextId = this.config.TRADE_PROTECTED_CONTEXT_ID;
-    const contextsToCheck = [contextId, protectedContextId];
 
     if (!forceRefresh) {
       const cached = this.database.getInventoryCache(username, appId, contextId);
@@ -138,6 +136,9 @@ class InventoryService {
 
     const steamId = client.steamID.getSteamID64();
 
+    const protectedContextId = this.config.TRADE_PROTECTED_CONTEXT_ID || 16;
+    const contextsToCheck = [contextId, protectedContextId];
+
     let allItems = [];
     let contextsLoaded = 0;
     
@@ -184,6 +185,8 @@ class InventoryService {
 
         const items = inventory.map(item => {
           const isTradable = item.tradable === true || item.tradable === 1;
+
+          const isTradeProtectedContext = ctx === protectedContextId;
           
           const descriptions = item.descriptions || [];
           let hasTradeHold = false;
@@ -205,8 +208,8 @@ class InventoryService {
             }
           }
           
-          const tradeLocked = (isTradable && hasTradeHold) || protectedContextId;
-          const tradable = isTradable && !hasTradeHold && !protectedContextId;
+          const tradeLocked = isTradable && hasTradeHold;
+          const tradable = isTradable && !hasTradeHold && !isTradeProtectedContext;
           const nonTradable = !isTradable;
 
           return {
@@ -217,11 +220,11 @@ class InventoryService {
             name: item.market_hash_name || item.name || 'Unknown Item',
             type: item.type || 'Unknown',
             rarity: this.getRarityFromTags(item.tags),
-
+            
             tradable,
             tradeLocked,
             nonTradable,
-            tradeProtected: protectedContextId,
+            tradeProtected: isTradeProtectedContext,
 
             marketable: item.marketable === 1 || item.marketable === true,
 
