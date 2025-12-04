@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Steam Bot Manager</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="min-h-screen">
+
+  <!-- Loading Screen -->
+  <div id="loadingScreen" class="loading-screen flex items-center justify-center">
+    <div class="text-center">
+      <i class="fas fa-spinner fa-spin text-6xl text-blue-500 mb-4"></i>
+      <p class="text-white text-xl">Loading Bot Manager...</p>
+      <p class="text-gray-400 text-sm mt-2" id="loadingStatus">Connecting to server...</p>
+    </div>
+  </div>
+
+  <div id="app" style="display:none;">
+    <!-- Navigation -->
+    <nav class="glass-strong border-b border-white/10">
+      <div class="max-w-7xl mx-auto px-6 py-4">
+        <div class="flex items-center justify-between">
+          <h1 class="text-2xl font-bold text-white flex items-center gap-3">
+            <i class="fas fa-robot text-blue-400"></i>
+            Steam Bot Manager
+          </h1>
+          <div class="flex gap-2">
+            <button onclick="App.switchTab('dashboard')" class="tab-button px-4 py-2 text-gray-300 hover:text-white border-b-2 border-transparent transition-colors">
+              <i class="fas fa-th-large mr-2"></i>Dashboard
+            </button>
+            <button onclick="App.switchTab('settings')" class="tab-button px-4 py-2 text-gray-300 hover:text-white border-b-2 border-transparent transition-colors">
+              <i class="fas fa-cog mr-2"></i>Settings
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Dashboard Tab -->
+    <div id="dashboardTab" class="max-w-7xl mx-auto p-6" style="display:block;"></div>
+
+    <!-- Settings Tab -->
+    <div id="settingsTab" class="max-w-7xl mx-auto p-6" style="display:none;"></div>
+  </div>
+
+  <!-- Add Account Modal -->
+  <div id="addAccountModal" class="modal">
+    <div class="glass-strong rounded-xl p-6 max-w-md w-full mx-4 border border-white/20">
+      <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+        <i class="fas fa-user-plus"></i> Add New Bot Account
+      </h3>
+      <div class="space-y-4">
+        <div>
+          <label class="text-gray-300 text-sm"><i class="fas fa-user mr-1"></i> Username</label>
+          <input type="text" id="newUsername" class="w-full glass text-white px-4 py-2 rounded-lg border border-white/20 focus:border-blue-500 focus:outline-none" placeholder="Steam username">
+        </div>
+        <div>
+          <label class="text-gray-300 text-sm"><i class="fas fa-lock mr-1"></i> Password</label>
+          <input type="password" id="newPassword" class="w-full glass text-white px-4 py-2 rounded-lg border border-white/20 focus:border-blue-500 focus:outline-none" placeholder="Steam password">
+        </div>
+        <div>
+          <label class="text-gray-300 text-sm"><i class="fas fa-envelope mr-1"></i> Email (Optional)</label>
+          <input type="email" id="newEmail" class="w-full glass text-white px-4 py-2 rounded-lg border border-white/20 focus:border-blue-500 focus:outline-none" placeholder="email@example.com">
+        </div>
+        <div class="border-t border-white/10 pt-4">
+          <p class="text-gray-300 text-sm mb-2"><i class="fas fa-key mr-1"></i> Shared Secret:</p>
+          <div class="space-y-2">
+            <label class="flex items-center text-white cursor-pointer">
+              <input type="radio" name="secretSource" value="manual" class="mr-2" checked>
+              <span>Enter manually</span>
+            </label>
+            <label class="flex items-center text-white cursor-pointer">
+              <input type="radio" name="secretSource" value="upload" class="mr-2">
+              <span>Upload .maFile</span>
+            </label>
+          </div>
+        </div>
+        <div id="manualSecretDiv">
+          <label class="text-gray-300 text-sm">Shared Secret</label>
+          <input type="text" id="newSharedSecret" class="w-full glass text-white px-4 py-2 rounded-lg border border-white/20 focus:border-blue-500 focus:outline-none" placeholder="ABCDEFGHIJ1234567890">
+        </div>
+        <div id="uploadSecretDiv" style="display:none;">
+          <label class="text-gray-300 text-sm">Upload .maFile</label>
+          <input type="file" id="maFileUpload" accept=".maFile" class="w-full glass text-white px-4 py-2 rounded-lg border border-white/20">
+          <p class="text-xs text-gray-400 mt-1">File will be parsed in browser - only shared_secret is extracted</p>
+        </div>
+        <div class="flex gap-3 mt-6">
+          <button onclick="App.saveNewAccount()" class="flex-1 glass-strong hover:bg-blue-600/30 text-white py-2 rounded-lg font-semibold transition-all">
+            <i class="fas fa-check mr-2"></i>Add Account
+          </button>
+          <button onclick="App.closeAddAccountModal()" class="flex-1 glass hover:bg-white/10 text-white py-2 rounded-lg font-semibold transition-all">
+            <i class="fas fa-times mr-2"></i>Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js"></script>
+</body>
+</html>
