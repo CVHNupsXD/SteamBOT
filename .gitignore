@@ -4,6 +4,7 @@
 /polldata
 /sessions
 /uploads
+/logs
 
 accounts.txt
 database.sqlite

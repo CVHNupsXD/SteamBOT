@@ -46,7 +46,6 @@ const App = {
     ws = new WebSocket(wsUrl);
 
     ws.onopen = () => {
-      console.log('WebSocket connected');
       this.addNotification('Connected to server', 'success');
     };
 
@@ -55,12 +54,11 @@ const App = {
         const message = JSON.parse(event.data);
         this.handleWebSocketMessage(message);
       } catch (error) {
-        console.error('Failed to parse WebSocket message:', error);
+        Logger.error('Failed to parse WebSocket message:', error);
       }
     };
 
     ws.onclose = () => {
-      console.log('WebSocket disconnected');
       if (!this.isLoading) {
         this.addNotification('Disconnected from server', 'error');
       }
@@ -68,7 +66,7 @@ const App = {
     };
 
     ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
+      this.addNotification('WebSocket error:', error);
     };
   },
 
@@ -126,7 +124,6 @@ const App = {
       this.accounts = newAccounts;
       if (!this.isLoading) this.render();
     } catch (error) {
-      console.error('Failed to load accounts:', error);
       this.addNotification('Failed to load accounts', 'error');
     }
   },
@@ -137,7 +134,7 @@ const App = {
       const data = await res.json();
       this.settings = data.settings || {};
     } catch (error) {
-      console.error('Failed to load settings:', error);
+      this.addNotification('Failed to load settings:', error);
     }
   },
 
